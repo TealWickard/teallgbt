@@ -1,0 +1,32 @@
+.map {
+	display: grid;
+	gap: 0px;
+	position: absolute;
+    left: 50%;
+	transform: translate(-50%);
+}
+.cell {
+	border-width: 1px;
+	border-color:lightsteelblue
+}
+.celltype0 {
+	background-color: white;
+}
+.celltype1 {
+	background-color: black;
+}
+.celltype2 {
+	background-color: lightcoral;
+}
+.celltype3 {
+	background-color: lightblue;
+}
+.celltype4 {
+	background-color: mediumpurple;
+}
+.celltype5 {
+	background-color: lightgreen;
+}
+.celltype8 {
+	background-color: grey;
+}
