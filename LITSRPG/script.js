@@ -74,18 +74,33 @@ function addListeners() {
 							sendError("Tetrominos must be constructed continuously!");
 							break;
 						}
-
+						if(checkForQuad(cell)) {
+							sendError("This placement creates a shaded 2x2");
+							break;
+						}
 						//cell placement is confirmed to be valid
 						for(let i = 0; i < 4; i++) {
 							adjacentTypes[i] = Math.max(adjacentTypes[i], neighbors[i + 2]);
 						}
+
+						//shade cell and update the curr
 						cell.setValue(6);
 						currCells[currCount] = cell;
 						currCount++;
+
+						//handle complete tetromino
 						if(currCount === 4) {
 							let shape = checkShape(currCells);
-							for(key in currCells) {
-								currCells[key].setValue(shape);
+							if(adjacentTypes[shape - 2]) {
+								sendError("Adjacent tetrominos cannot be the same shape");
+								for(key in currCells) {
+									currCells[key].setValue(0);
+								}
+							}
+							else {
+								for(key in currCells) {
+									currCells[key].setValue(shape);
+								}
 							}
 							currCount = 0;
 							adjacentTypes = [0, 0, 0, 0];
@@ -140,6 +155,14 @@ function sendError(errorMessage) {
     });
 }
 
+function checkForQuad(cell) {
+	if(cell.neighbor(-1, 0) && cell.neighbor(0, -1) && cell.neighbor(-1, 0).isShaded() && cell.neighbor(0, -1).isShaded() && cell.neighbor(-1, -1).isShaded()) return true;
+	if(cell.neighbor(1, 0) && cell.neighbor(0, -1) && cell.neighbor(1, 0).isShaded() && cell.neighbor(0, -1).isShaded() && cell.neighbor(1, -1).isShaded()) return true;
+	if(cell.neighbor(-1, 0) && cell.neighbor(0, 1) && cell.neighbor(-1, 0).isShaded() && cell.neighbor(0, 1).isShaded() && cell.neighbor(-1, 1).isShaded()) return true;
+	if(cell.neighbor(1, 0) && cell.neighbor(0, 1) && cell.neighbor(1, 0).isShaded() && cell.neighbor(0, 1).isShaded() && cell.neighbor(1, 1).isShaded()) return true;
+	return false;
+}
+
 class Cell {
 	constructor(row, col, value) {
 		this.row = Number(row);
@@ -159,14 +182,17 @@ class Cell {
 	// returns 0 or 1 for [empty, terrain, L, I, T, S, curr, start, end]
 	get neighbors() {
 		let neighbors = [0, 0, 0, 0, 0, 0, 0, 0, 0];
-		if(map[this.row - 1] && map[this.row - 1][this.col]) neighbors[map[this.row - 1][this.col].value] = 1;
-		if(map[this.row + 1] && map[this.row + 1][this.col]) neighbors[map[this.row + 1][this.col].value] = 1;
-		if(map[this.row] && map[this.row][this.col - 1]) neighbors[map[this.row][this.col - 1].value] = 1;
-		if(map[this.row] && map[this.row][this.col + 1]) neighbors[map[this.row][this.col + 1].value] = 1;
+		if(this.neighbor(-1, 0)) neighbors[this.neighbor(-1, 0).value] = 1;
+		if(this.neighbor(1, 0)) neighbors[this.neighbor(1, 0).value] = 1;
+		if(this.neighbor(0, -1)) neighbors[this.neighbor(0, -1).value] = 1;
+		if(this.neighbor(0, 1)) neighbors[this.neighbor(0, 1).value] = 1;
 		return neighbors;
 	}
 	neighbor(offRow, offCol) {
-		if(map[this.row + offRow][this.col + offCol]) return map[this.row + offRow][this.col + offCol];
+		if(map[this.row + offRow] && map[this.row + offRow][this.col + offCol]) return map[this.row + offRow][this.col + offCol];
 		return null;
+	}
+	isShaded() {
+		return this.value > 1 && this.value < 7;
 	}
 }
