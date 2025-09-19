@@ -1,16 +1,9 @@
 let tutorial = [
-	[1, 1, 7, 1, 1],
-	[0, 0, 0, 0, 0],
-	[0, 0, 1, 0, 0],
-	[0, 0, 0, 1, 0],
-	[0, 0, 0, 0, 1],
-	[0, 1, 0, 0, 0],
-	[1, 0, 0, 0, 0],
-	[0, 0, 1, 0, 1],
-	[0, 0, 0, 0, 0],
-	[0, 1, 0, 1, 0],
-	[0, 0, 0, 0, 0],
-	[1, 1, 8, 1, 1]
+	[1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1],
+	[1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 1],
+	[7, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 8],
+	[1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 1],
+	[1, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1]
 ];
 let map = [];
 let currCount = 0;
@@ -120,16 +113,16 @@ function checkShape(input) {
 	let kinks = 2;
 	for(key in input) {
 		let links = 0;
-		if(input.includes(map[input[key].row - 1][input[key].col])) {
-			if(input.includes(map[input[key].row + 1][input[key].col])) kinks--;
+		if(input.includes(input[key].neighbor(-1, 0))) {
+			if(input.includes(input[key].neighbor(1, 0))) kinks--;
 			links++;
 		} 
-		if(input.includes(map[input[key].row + 1][input[key].col])) links++;
-		if(input.includes(map[input[key].row][input[key].col - 1])) {
-			if(input.includes(map[input[key].row][input[key].col + 1])) kinks--;
+		if(input.includes(input[key].neighbor(1, 0))) links++;
+		if(input.includes(input[key].neighbor(0, -1))) {
+			if(input.includes(input[key].neighbor(0, 1))) kinks--;
 			links++;
 		}
-		if(input.includes(map[input[key].row][input[key].col + 1])) links++;
+		if(input.includes(input[key].neighbor(0, 1))) links++;
 		if(links === 3) return 4;
 	}
 	switch(kinks) {
